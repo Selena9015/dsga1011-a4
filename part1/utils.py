@@ -52,7 +52,7 @@ MIN_WORD_LEN = 4     # skip short words (e.g. "not", "no", "bad") to preserve th
 def get_synonyms(word):
     # Collect single-word WordNet synonyms that differ from the original word
     synonyms = set()
-    for synset in wordnet.synsets(word):
+    for synset in wordnet.synsets(word)[:1]:
         for lemma in synset.lemmas():
             candidate = lemma.name()
             if "_" not in candidate and candidate.isalpha() and candidate.lower() != word:
@@ -84,10 +84,11 @@ def transform_word(match):
     word = match.group(0)
     if len(word) < MIN_WORD_LEN:
         return word
-    if random.random() < SYNONYM_PROB:
-        synonyms = get_synonyms(word.lower())
+    # Synonyms only for lowercase words: skips names, titles and sentence-initial words
+    if word.islower() and random.random() < SYNONYM_PROB:
+        synonyms = get_synonyms(word)
         if synonyms:
-            word = match_case(random.choice(synonyms), word)
+            word = random.choice(synonyms)
     if random.random() < TYPO_PROB:
         word = add_typo(word)
     return word
