@@ -2,3 +2,10 @@
 __pycache__/
 *.pyc
 .claude/settings.local.json
+
+# model checkpoints (upload to Google Drive instead)
+part1/out/
+part1/out_augmented/
+part2/checkpoints/
+*.bin
+*.safetensors
