@@ -44,9 +44,28 @@ def do_train(args, model, train_dataloader, save_dir="./out"):
     # Remember that pytorch uses gradient accumumlation so you need to use zero_grad (https://pytorch.org/tutorials/recipes/recipes/zeroing_out_gradients.html)
     # You can use progress_bar.update(1) to see the progress during training
     # You can refer to the pytorch tutorial covered in class for reference
+    
+    for epoch in range(num_epochs):
+        for batch in train_dataloader:
+            
+            # Move every tensor in the batch to the GPU
+            batch = {k: v.to(device) for k, v in batch.items()}
 
-    raise NotImplementedError
+            # Forward pass (batch contains "labels", so the model returns the loss)
+            outputs = model(**batch)
+            loss = outputs.loss
 
+            # Backward pass: compute gradients
+            loss.backward()
+
+            # Update parameters, step the LR scheduler, reset gradients
+            optimizer.step()
+            lr_scheduler.step()
+            optimizer.zero_grad()
+
+            # Advance the progress bar by one step
+            progress_bar.update(1)
+    
     ##### YOUR CODE ENDS HERE ######
 
     print("Training completed...")
