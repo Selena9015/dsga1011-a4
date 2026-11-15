@@ -55,7 +55,8 @@ def get_synonyms(word):
     for synset in wordnet.synsets(word)[:1]:
         for lemma in synset.lemmas():
             candidate = lemma.name()
-            if "_" not in candidate and candidate.isalpha() and candidate.lower() != word:
+            if ("_" not in candidate and candidate.isalpha()
+                    and len(candidate) >= MIN_WORD_LEN and candidate.lower() != word):
                 synonyms.add(candidate.lower())
     return sorted(synonyms)  # sorted so random.choice is reproducible across runs
 
