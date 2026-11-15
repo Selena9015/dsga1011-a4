@@ -45,7 +45,7 @@ QWERTY_NEIGHBORS = {
     "b": "vghn", "n": "bhjm", "m": "njk",
 }
 SYNONYM_PROB = 0.3   # probability of replacing a word with a WordNet synonym
-TYPO_PROB = 0.25     # probability of introducing a keyboard typo into a word
+TYPO_PROB = 0.35      # probability of introducing a keyboard typo into a word
 MIN_WORD_LEN = 4     # skip short words (e.g. "not", "no", "bad") to preserve the label
 
 @lru_cache(maxsize=None)
