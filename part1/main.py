@@ -53,6 +53,7 @@ def do_train(args, model, train_dataloader, save_dir="./out"):
 
             # Forward pass (batch contains "labels", so the model returns the loss)
             outputs = model(**batch)
+            
             loss = outputs.loss
 
             # Backward pass: compute gradients
@@ -112,7 +113,19 @@ def create_augmented_dataloader(args, dataset):
     # dataloader will be for the original training split augmented with 5k random transformed examples from the training set.
     # You may find it helpful to see how the dataloader was created at other place in this code.
 
-    raise NotImplementedError
+    sampled_dataset = dataset["train"].shuffle(seed=42).select(range(5000))
+    transformed_dataset = sampled_dataset.map(custom_transform, load_from_cache_file=False)
+    
+    # Augmented training set = original 25,000 examples + 5,000 transformed examples
+    augmented_dataset = datasets.concatenate_datasets([dataset["train"], transformed_dataset])
+    
+    # Same preprocessing as the original training data
+    augmented_tokenized_dataset = augmented_dataset.map(tokenize_function, batched=True, load_from_cache_file=False)
+    augmented_tokenized_dataset = augmented_tokenized_dataset.remove_columns(["text"])
+    augmented_tokenized_dataset = augmented_tokenized_dataset.rename_column("label", "labels")
+    augmented_tokenized_dataset.set_format("torch")
+
+    train_dataloader = DataLoader(augmented_tokenized_dataset, shuffle=True, batch_size=args.batch_size)
 
     ##### YOUR CODE ENDS HERE ######
 
